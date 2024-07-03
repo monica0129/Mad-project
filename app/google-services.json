@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "78817901909",
+    "project_id": "ezbooking-f6353",
+    "storage_bucket": "ezbooking-f6353.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78817901909:android:2293947c1dbcfea3d8c3dc",
+        "android_client_info": {
+          "package_name": "com.example.ezbooking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9XaXP4_mdu5wD2hrWWPMv867Yd2SsOUk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

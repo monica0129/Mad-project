@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Hotels4"
+    android:background="@color/bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Details"
+            android:gravity="center"
+            android:textSize="38sp"
+            android:layout_marginTop="16dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Name:"
+            android:layout_marginTop="16dp"/>
+
+        <EditText
+            android:id="@+id/etGuestName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Guest Name"
+            android:inputType="textPersonName"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Age:"
+            android:layout_marginTop="16dp"/>
+
+        <EditText
+            android:id="@+id/etGuestAge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Guest Age"
+            android:inputType="number"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Type of Room:"
+            android:layout_marginTop="16dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerRoomType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Number of Persons:"
+            android:layout_marginTop="16dp"/>
+
+        <EditText
+            android:id="@+id/etNumberOfPersons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Number of Persons"
+            android:inputType="number"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Phone Number:"
+            android:layout_marginTop="16dp"/>
+
+        <EditText
+            android:id="@+id/etPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone Number"
+            android:inputType="phone"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/bookNowButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Book"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"/>
+</RelativeLayout>
