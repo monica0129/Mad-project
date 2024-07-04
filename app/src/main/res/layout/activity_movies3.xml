@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Hotels4"
+    android:background="@color/bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Details"
+            android:gravity="center"
+            android:textSize="38sp"
+            android:layout_marginTop="16dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Name:"
+            android:layout_marginTop="16dp"/>
+
+        <EditText
+            android:id="@+id/etGuestName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Name"
+            android:inputType="textPersonName"
+            android:layout_marginTop="8dp"/>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Time:"
+            android:layout_marginTop="16dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerTimeSlot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Number of Tickets:"
+            android:layout_marginTop="16dp"/>
+
+        <EditText
+            android:id="@+id/etNumberOfTickets"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Number of Tickets"
+            android:inputType="number"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mobile Number:"
+            android:layout_marginTop="16dp"/>
+
+        <EditText
+            android:id="@+id/etMobileNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Mobile Number"
+            android:inputType="phone"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/bookNowButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Book"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"/>
+</RelativeLayout>

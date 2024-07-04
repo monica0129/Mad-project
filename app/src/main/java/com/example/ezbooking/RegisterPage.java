@@ -23,9 +23,9 @@ public class RegisterPage extends AppCompatActivity {
     AppCompatEditText editTextUsername, editTextEmail, editTextNewPassword;
     Button buttonReg;
     FirebaseAuth mAuth;
-
     ProgressBar progressBar;
     TextView textView;
+    DatabaseHelper db;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -34,8 +34,9 @@ public class RegisterPage extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register_page);
 
-        // Initialize Firebase Auth
+        // Initialize Firebase Auth and SQLite Database Helper
         mAuth = FirebaseAuth.getInstance();
+        db = new DatabaseHelper(this);
 
         editTextEmail = findViewById(R.id.email1);
         editTextNewPassword = findViewById(R.id.rpassword);
@@ -61,12 +62,19 @@ public class RegisterPage extends AppCompatActivity {
                 Toast.makeText(RegisterPage.this, "Enter Password", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (TextUtils.isEmpty(username)) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(RegisterPage.this, "Enter Username", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         progressBar.setVisibility(View.GONE);
                         if (task.isSuccessful()) {
-                            Toast.makeText(getApplicationContext(), "Authentication successful.", Toast.LENGTH_SHORT).show();
+                            // Store user details in SQLite with a null profile image path initially
+                            db.addUser(username, email, password);
+                            Toast.makeText(getApplicationContext(), "Registration successful.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(RegisterPage.this, Dashboard.class);
                             startActivity(intent);
                             finish();

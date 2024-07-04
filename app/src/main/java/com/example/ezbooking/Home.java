@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Home extends AppCompatActivity {
@@ -18,6 +17,7 @@ public class Home extends AppCompatActivity {
     private RecyclerView recentBookingsRecyclerView;
     private RecentBookingsAdapter adapter;
     private List<Booking> bookingList;
+    private DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +44,10 @@ public class Home extends AppCompatActivity {
         recentBookingsRecyclerView = findViewById(R.id.recent_bookings_recycler_view);
         recentBookingsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Initialize booking list and adapter
-        bookingList = new ArrayList<>();
-        adapter = new RecentBookingsAdapter(bookingList);
+        // Initialize database helper
+        databaseHelper = new DatabaseHelper(this);
 
-        recentBookingsRecyclerView.setAdapter(adapter);
-
-        // Load booking data
+        // Load booking data from the database
         loadBookingData();
 
         // Handle back button press
@@ -68,12 +65,8 @@ public class Home extends AppCompatActivity {
     }
 
     private void loadBookingData() {
-        // Add sample booking data (replace with real data)
-        bookingList.add(new Booking("Hotel 1", "Location 1"));
-        bookingList.add(new Booking("Hotel 2", "Location 2"));
-        bookingList.add(new Booking("Hotel 3", "Location 3"));
-
-        // Notify adapter of data changes
-        adapter.notifyDataSetChanged();
+        bookingList = databaseHelper.getAllBookings();
+        adapter = new RecentBookingsAdapter(bookingList);
+        recentBookingsRecyclerView.setAdapter(adapter);
     }
 }

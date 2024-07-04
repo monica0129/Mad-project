@@ -46,6 +46,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:25.0.0")
     implementation("com.google.firebase:firebase-database:21.0.0")
     implementation("com.makeramen:roundedimageview:2.3.0")
+    implementation("androidx.sqlite:sqlite:2.1.0")
 }
 
 

@@ -21,12 +21,22 @@
     <string name="categories">Categories</string>
     <string name="click_here_to_sign_in">Click here to sign in</string>
     <string name="emailL">Email</string>
-    <resources>
-        <string-array name="room_types">
-            <item>Single Room</item>
-            <item>Double Room</item>
-            <item>Suite</item>
-        </string-array>
-    </resources>
+
+    <string-array name="room_types">
+        <item>Single Room</item>
+        <item>Double Room</item>
+        <item>Suite</item>
+    </string-array>
+    <string-array name="time_slots">
+        <item>7.00</item>
+        <item>10.00</item>
+        <item>12.30</item>
+        <item>18.00</item>
+        <item>22.00</item>
+    </string-array>
+    <string name="Movie1">movie img</string>
+    <string name="Hotel1">hotel img</string>
+
+
 
 </resources>

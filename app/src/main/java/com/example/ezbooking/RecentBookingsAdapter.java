@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class RecentBookingsAdapter extends RecyclerView.Adapter<RecentBookingsAdapter.BookingViewHolder> {
+public class RecentBookingsAdapter extends RecyclerView.Adapter<RecentBookingsAdapter.ViewHolder> {
 
     private List<Booking> bookingList;
 
@@ -20,16 +20,16 @@ public class RecentBookingsAdapter extends RecyclerView.Adapter<RecentBookingsAd
 
     @NonNull
     @Override
-    public BookingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_booking, parent, false);
-        return new BookingViewHolder(view);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.booking_item, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BookingViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Booking booking = bookingList.get(position);
-        holder.nameTextView.setText(booking.getName());
-        holder.locationTextView.setText(booking.getLocation());
+        holder.guestNameTextView.setText(booking.getGuestName());
+        holder.roomTypeTextView.setText(booking.getRoomType());
     }
 
     @Override
@@ -37,15 +37,15 @@ public class RecentBookingsAdapter extends RecyclerView.Adapter<RecentBookingsAd
         return bookingList.size();
     }
 
-    static class BookingViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView nameTextView;
-        TextView locationTextView;
+        public TextView guestNameTextView;
+        public TextView roomTypeTextView;
 
-        public BookingViewHolder(@NonNull View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
-            nameTextView = itemView.findViewById(R.id.booking_name);
-            locationTextView = itemView.findViewById(R.id.booking_location);
+            guestNameTextView = itemView.findViewById(R.id.guest_name);
+            roomTypeTextView = itemView.findViewById(R.id.room_type);
         }
     }
 }

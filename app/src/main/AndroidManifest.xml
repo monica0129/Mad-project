@@ -16,6 +16,12 @@
         android:theme="@style/Theme.EZBooking"
         tools:targetApi="31">
         <activity
+            android:name=".Movies3"
+            android:exported="false" />
+        <activity
+            android:name=".Movies2"
+            android:exported="false" />
+        <activity
             android:name=".Hotels4"
             android:exported="false" />
         <activity
