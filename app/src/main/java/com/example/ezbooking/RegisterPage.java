@@ -10,7 +10,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
 
@@ -18,8 +17,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.FirebaseUser;
 
 public class RegisterPage extends AppCompatActivity {
+
     AppCompatEditText editTextUsername, editTextEmail, editTextNewPassword;
     Button buttonReg;
     FirebaseAuth mAuth;
@@ -31,7 +32,6 @@ public class RegisterPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register_page);
 
         // Initialize Firebase Auth and SQLite Database Helper
@@ -48,9 +48,9 @@ public class RegisterPage extends AppCompatActivity {
         buttonReg.setOnClickListener(v -> {
             String email, password, username;
             progressBar.setVisibility(View.VISIBLE);
-            email = String.valueOf(editTextEmail.getText());
-            password = String.valueOf(editTextNewPassword.getText());
-            username = String.valueOf(editTextUsername.getText());
+            email = editTextEmail.getText().toString().trim();
+            password = editTextNewPassword.getText().toString().trim();
+            username = editTextUsername.getText().toString().trim();
 
             if (TextUtils.isEmpty(email)) {
                 progressBar.setVisibility(View.GONE);
@@ -68,17 +68,27 @@ public class RegisterPage extends AppCompatActivity {
                 return;
             }
 
+            // Create user with Firebase Authentication
             mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(task -> {
+                    .addOnCompleteListener(RegisterPage.this, task -> {
                         progressBar.setVisibility(View.GONE);
                         if (task.isSuccessful()) {
-                            // Store user details in SQLite with a null profile image path initially
-                            db.addUser(username, email, password);
-                            Toast.makeText(getApplicationContext(), "Registration successful.", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(RegisterPage.this, Dashboard.class);
-                            startActivity(intent);
-                            finish();
+                            // Sign in success, update UI with the signed-in user's information
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user != null) {
+                                // Store user details in SQLite
+                                db.addUser(username, email, password);
+                                Toast.makeText(RegisterPage.this, "Registration successful.", Toast.LENGTH_SHORT).show();
+
+                                // Redirect to Profile activity and pass data
+                                Intent intent = new Intent(RegisterPage.this, Profile.class);
+                                intent.putExtra("username", username);
+                                intent.putExtra("email", email);
+                                startActivity(intent);
+                                finish();
+                            }
                         } else {
+                            // If registration fails, display a message to the user.
                             try {
                                 throw task.getException();
                             } catch (FirebaseAuthWeakPasswordException e) {
@@ -95,13 +105,13 @@ public class RegisterPage extends AppCompatActivity {
         });
 
         textView.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), LoginPage.class);
+            Intent intent = new Intent(RegisterPage.this, LoginPage.class);
             startActivity(intent);
             finish();
         });
     }
 
     private void showToast(String message) {
-        runOnUiThread(() -> Toast.makeText(RegisterPage.this, message, Toast.LENGTH_SHORT).show());
+        Toast.makeText(RegisterPage.this, message, Toast.LENGTH_SHORT).show();
     }
 }

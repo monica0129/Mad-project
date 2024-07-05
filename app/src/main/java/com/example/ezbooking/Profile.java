@@ -1,4 +1,5 @@
 package com.example.ezbooking;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -9,8 +10,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.IOException;
 
@@ -22,6 +28,8 @@ public class Profile extends AppCompatActivity {
     EditText editUsername, editEmail;
     Button saveButton, logoutButton;
     DatabaseHelper databaseHelper;
+    FirebaseUser currentUser; // Firebase user object
+    String username, email; // Variables to hold username and email
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +43,24 @@ public class Profile extends AppCompatActivity {
         logoutButton = findViewById(R.id.logout_button);
         databaseHelper = new DatabaseHelper(this);
 
-        // Load user data from database
-        loadUserData();
+        // Initialize Firebase Auth and get current user
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
+        // Check if user is authenticated
+        if (currentUser == null) {
+            // User not logged in, navigate to login page
+            Intent intent = new Intent(Profile.this, LoginPage.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        // Load user data from Firebase Auth and SQLite
+        if (currentUser.getEmail() != null) {
+            email = currentUser.getEmail();
+            loadUserData(email);
+        }
 
         profileImage.setOnClickListener(v -> chooseImage());
 
@@ -47,42 +71,67 @@ public class Profile extends AppCompatActivity {
         logoutButton.setOnClickListener(v -> {
             logoutUser();
         });
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent intent = new Intent(Profile.this,Dashboard.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                finish();
+
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
-    // Method to load user data from database
-    private void loadUserData() {
-        // Assuming you have methods in DatabaseHelper to fetch user data
-        // Replace "user@example.com" with actual logged-in user's email
-        UserData userData = databaseHelper.getUserData("user@example.com");
+    // Method to load user data from SQLite
+    private void loadUserData(String email) {
+        UserData userData = databaseHelper.getUserData(email);
 
         if (userData != null) {
-            editUsername.setText(userData.getUsername());
-            editEmail.setText(userData.getEmail());
+            username = userData.getUsername();
+            editUsername.setText(username);
+            editEmail.setText(email);
         }
     }
 
-    // Method to update user data in database
+    // Method to update user data in Firebase and SQLite
     private void updateUserData() {
-        String username = editUsername.getText().toString().trim();
-        String email = editEmail.getText().toString().trim();
+        String newUsername = editUsername.getText().toString().trim();
+        String newEmail = editEmail.getText().toString().trim();
 
-        if (TextUtils.isEmpty(username)) {
+        if (TextUtils.isEmpty(newUsername)) {
             editUsername.setError("Please enter username");
             editUsername.requestFocus();
             return;
         }
 
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(newEmail)) {
             editEmail.setError("Please enter email");
             editEmail.requestFocus();
             return;
         }
 
-        // Update user data in database
-        boolean updated = databaseHelper.updateUserData(username, email);
+        // Update Firebase Auth user email (if necessary)
+        if (!newEmail.equals(email)) {
+            currentUser.updateEmail(newEmail)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            email = newEmail;
+                        } else {
+                            Toast.makeText(Profile.this, "Failed to update email", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+
+        // Update SQLite user data
+        boolean updated = databaseHelper.updateUserData(username, newEmail);
 
         if (updated) {
             Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+            // Update local username variable
+            username = newUsername;
         } else {
             Toast.makeText(this, "Failed to update profile", Toast.LENGTH_SHORT).show();
         }
@@ -90,7 +139,7 @@ public class Profile extends AppCompatActivity {
 
     // Method to handle logout action
     private void logoutUser() {
-        // Handle logout logic here, navigate to login page
+        FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(Profile.this, LoginPage.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -105,6 +154,7 @@ public class Profile extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
+    // Handle result from image selection
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
