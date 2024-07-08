@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Movies">
+    tools:context=".Movies2">
 
     <androidx.constraintlayout.widget.Guideline
         android:layout_width="wrap_content"
@@ -49,20 +49,20 @@
         android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/searchView"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintVertical_bias="1.0">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
                 android:layout_width="match_parent"
-                android:layout_height="226dp"
-                android:id="@+id/cardView">
+                android:layout_height="226dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -88,8 +88,8 @@
                         android:layout_marginTop="180dp"
                         android:text="PVR, AEROHUB,Chennai"
                         android:textColor="@color/white"
-                        android:textStyle="bold"
                         android:textSize="22sp"
+                        android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.017"
                         app:layout_constraintStart_toStartOf="parent"
@@ -99,9 +99,9 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardView2"
                 android:layout_width="match_parent"
                 android:layout_height="226dp"
-                android:id="@+id/cardView2"
                 android:layout_marginTop="20dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -141,6 +141,17 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <ImageView
+    android:id="@+id/location_icon"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    android:src="@drawable/ic_location"
+    android:contentDescription="@string/location_icon"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginBottom="16dp"
+    android:layout_marginEnd="16dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

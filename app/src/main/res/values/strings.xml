@@ -36,7 +36,7 @@
     </string-array>
     <string name="Movie1">movie img</string>
     <string name="Hotel1">hotel img</string>
-
+    <string name="location_icon">Location Icon</string>
 
 
 </resources>
