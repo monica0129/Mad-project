@@ -1,4 +1,5 @@
 package com.example.ezbooking;
+
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,7 +14,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "bookings.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4; // Incremented the database version
 
     // Table and column names for booking details
     private static final String TABLE_BOOKINGS = "bookings";
@@ -30,7 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_USERNAME = "username";
     private static final String COLUMN_EMAIL = "email";
     private static final String COLUMN_PASSWORD = "password";
-    private static final String NEW_COLUMN_NAME = "newcolumn";
+    private static final String COLUMN_PROFILE_IMAGE = "profile_image"; // New column for profile image
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -51,7 +52,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COLUMN_USERNAME + " TEXT,"
                 + COLUMN_EMAIL + " TEXT,"
-                + COLUMN_PASSWORD + " TEXT" + ")";
+                + COLUMN_PASSWORD + " TEXT,"
+                + COLUMN_PROFILE_IMAGE + " TEXT" + ")"; // Profile image column
         db.execSQL(CREATE_USERS_TABLE);
     }
 
@@ -71,15 +73,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 // No break here, so it falls through to the next case
 
             case 2:
-
                 String ADD_NEW_COLUMN = "ALTER TABLE " + TABLE_USERS +
-                        " ADD COLUMN " + NEW_COLUMN_NAME + " TEXT";
+                        " ADD COLUMN " + COLUMN_PROFILE_IMAGE + " TEXT"; // Add profile image column
                 db.execSQL(ADD_NEW_COLUMN);
+
+            case 3:
+                // Additional upgrade logic for future versions
+                break;
+
             default:
                 break;
         }
     }
-
 
     // Method to add a new user
     public void addUser(String username, String email, String password) {
@@ -129,10 +134,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_USERNAME, username);
         values.put(COLUMN_EMAIL, email);
 
-        int rowsAffected = db.update(TABLE_USERS, values, null, null);
+        int rowsAffected = db.update(TABLE_USERS, values, COLUMN_EMAIL + "=?", new String[]{email});
         db.close();
 
         return rowsAffected > 0;
+    }
+
+    // Method to update profile image
+    public boolean updateProfileImage(String email, String encodedImage) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PROFILE_IMAGE, encodedImage);
+
+        int rowsAffected = db.update(TABLE_USERS, values, COLUMN_EMAIL + "=?", new String[]{email});
+        db.close();
+
+        return rowsAffected > 0;
+    }
+
+    // Method to get profile image
+    public String getProfileImage(String email) {
+        String encodedImage = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(TABLE_USERS, new String[]{COLUMN_PROFILE_IMAGE},
+                    COLUMN_EMAIL + "=?", new String[]{email},
+                    null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                @SuppressLint("Range") String image = cursor.getString(cursor.getColumnIndex(COLUMN_PROFILE_IMAGE));
+                encodedImage = image;
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error retrieving profile image", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return encodedImage;
     }
 
     // Method to add a new booking

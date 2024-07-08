@@ -2,10 +2,14 @@ package com.example.ezbooking;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Base64;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -18,11 +22,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class Profile extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final String TAG = "ProfileActivity";
 
     ImageView profileImage;
     EditText editUsername, editEmail;
@@ -75,11 +81,10 @@ public class Profile extends AppCompatActivity {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Intent intent = new Intent(Profile.this,Dashboard.class);
+                Intent intent = new Intent(Profile.this, Dashboard.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
                 finish();
-
             }
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
@@ -93,6 +98,15 @@ public class Profile extends AppCompatActivity {
             username = userData.getUsername();
             editUsername.setText(username);
             editEmail.setText(email);
+
+            // Load profile image
+            String encodedImage = databaseHelper.getProfileImage(email);
+            if (encodedImage != null) {
+                Bitmap bitmap = decodeImage(encodedImage);
+                profileImage.setImageBitmap(bitmap);
+            }
+        } else {
+            Log.e(TAG, "User data not found for email: " + email);
         }
     }
 
@@ -128,7 +142,12 @@ public class Profile extends AppCompatActivity {
         // Update SQLite user data
         boolean updated = databaseHelper.updateUserData(username, newEmail);
 
-        if (updated) {
+        // Save profile image
+        Bitmap bitmap = ((BitmapDrawable) profileImage.getDrawable()).getBitmap();
+        String encodedImage = encodeImage(bitmap);
+        boolean imageUpdated = databaseHelper.updateProfileImage(email, encodedImage);
+
+        if (updated && imageUpdated) {
             Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
             // Update local username variable
             username = newUsername;
@@ -164,9 +183,29 @@ public class Profile extends AppCompatActivity {
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
                 profileImage.setImageBitmap(bitmap);
+
+                // Save profile image to the database
+                String encodedImage = encodeImage(bitmap);
+                boolean imageUpdated = databaseHelper.updateProfileImage(email, encodedImage);
+                if (!imageUpdated) {
+                    Toast.makeText(this, "Failed to save profile image", Toast.LENGTH_SHORT).show();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.e(TAG, "Error loading image: " + e.getMessage());
             }
         }
+    }
+
+    private String encodeImage(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(bytes, Base64.DEFAULT);
+    }
+
+    private Bitmap decodeImage(String encodedImage) {
+        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 }
