@@ -33,9 +33,9 @@ public class mapping extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
 
-        LatLng location = new LatLng(13.0843, 80.2705);
+        LatLng location = new LatLng(13.0110, 80.2354);
         googleMap.addMarker(new MarkerOptions().position(location).title("TamilNadu"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location,12));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location,22));
 
 
     }

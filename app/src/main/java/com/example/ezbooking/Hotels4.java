@@ -6,8 +6,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -15,13 +17,16 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import java.util.Calendar;
 
 public class Hotels4 extends AppCompatActivity {
 
-    public static final String CHANNEL_ID = "HOTEL_BOOKING_NOTIFICATION_CHANNEL"; // Changed to public and static
+    public static final String CHANNEL_ID = "HOTEL_BOOKING_NOTIFICATION_CHANNEL";
+    private static final int SMS_PERMISSION_REQUEST_CODE = 1;
     private EditText etGuestName;
     private EditText etGuestAge;
     private Spinner spinnerRoomType;
@@ -58,6 +63,7 @@ public class Hotels4 extends AppCompatActivity {
 
         // Create notification channel if needed (API 26+)
         createNotificationChannel();
+        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.SEND_SMS}, SMS_PERMISSION_REQUEST_CODE);
     }
 
     private void bookNow() {
@@ -82,6 +88,9 @@ public class Hotels4 extends AppCompatActivity {
 
         // Send booking notification
         sendBookingNotification(guestName);
+
+        // Send SMS with booking details
+        sendBookingSMS(guestName, roomType, persons, phoneNumber);
 
         // Navigate back to the home page
         Intent intent = new Intent(Hotels4.this, Home.class);
@@ -123,5 +132,33 @@ public class Hotels4 extends AppCompatActivity {
                 calendar.getTimeInMillis(),
                 pendingIntent
         );
+    }
+
+    private void sendBookingSMS(String guestName, String roomType, int numberOfPersons, String phoneNumber) {
+        String message = "Booking Confirmation: \n" +
+                "Guest: " + guestName + "\n" +
+                "Room Type: " + roomType + "\n" +
+                "Number of Persons: " + numberOfPersons;
+
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+            Toast.makeText(this, "Booking details sent via SMS", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "SMS failed to send, please try again", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == SMS_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "SMS permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "SMS permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
